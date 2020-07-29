@@ -1,12 +1,12 @@
 class MoviesController < ApplicationController
 
   def movie_params
-    params.require(:movie).permit(:title, :rating, :description, :release_date)
+    params.require(:movie).permit(:title, :rating, :description, :release_date, :director)
   end
 
   def show
-    id = params[:id] # retrieve movie ID from URI route
-    @movie = Movie.find(id) # look up movie by unique ID
+    @id = params[:id] # retrieve movie ID from URI route
+    @movie = Movie.find(@id) # look up movie by unique ID
     # will render app/views/movies/show.<extension> by default
   end
 
@@ -60,5 +60,15 @@ class MoviesController < ApplicationController
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
   end
+  
+  def director
+    movie = Movie.find(params[:id])
+    if !movie.director.blank?
+      @movies = Movie.findSameDirectors(params[:id])
+    else 
+      flash[:notice] = "'#{movie.title}' has no director info"
+      redirect_to movies_path
+    end 
+  end 
 
 end
